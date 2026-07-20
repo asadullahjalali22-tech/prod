@@ -1,0 +1,59 @@
+name: check the project code
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+
+    steps:
+
+
+      - name: download the project code
+        uses: actions/checkout@v4
+
+
+      - name: show the project code
+        run: ls -la
+
+
+      - name: check python syntax
+        run: python3 -m py_compile ./app/app.py
+
+
+      - name: check the python import
+        run: python3 -c "import app"
+
+
+
+      - name: check the docekr compose file
+        run: docker compose config
+
+
+      - name: build the docker compose
+        run: docker compose build
+
+
+      - name: run docker compose file
+        run: docker compose up -d --build
+      
+
+      - name: show the containers
+        run: docker ps -a
+
+
+
+      - name: check the nginx and flask
+        run: |
+          sleep 20
+          curl http://localhost:110
+          curl http://localhost:110/health
+          curl http://localhost:110/products
+          curl http://localhost:110/db
+
+      - name: job are done
+        run: echo "jobs are done"
